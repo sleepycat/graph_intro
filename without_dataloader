@@ -1,0 +1,12 @@
+{"query":"\n\t  FOR person IN persons\n\t    FILTER person.name == @value0\n              LIMIT 1\n\t      RETURN person\n\t","bindVars":{"value0":"Eve"}}
+{"result":[{"_key":"eve","_id":"persons/eve","_rev":"_UjFlUV6--C","name":"Eve"}],"hasMore":false,"cached":false,"extra":{"stats":{"writesExecuted":0,"writesIgnored":0,"scannedFull":4,"scannedIndex":0,"filtered":3,"executionTime":2.040863037109375e-4},"warnings":[]},"error":false,"code":201}
+
+{"query":"\n\t  FOR vertex IN OUTBOUND @value0 knows\n\t    RETURN vertex\n\t","bindVars":{"value0":"persons/eve"}}
+{"result":[{"_key":"bob","_id":"persons/bob","_rev":"_UjFlUV6--_","name":"Bob"},{"_key":"alice","_id":"persons/alice","_rev":"_UjFlUV6---","name":"Alice"}],"hasMore":false,"cached":false,"extra":{"stats":{"writesExecuted":0,"writesIgnored":0,"scannedFull":0,"scannedIndex":4,"filtered":0,"executionTime":1.9884109497070313e-4},"warnings":[]},"error":false,"code":201}
+
+{"query":"\n\t  FOR vertex IN OUTBOUND @value0 knows\n\t    RETURN vertex\n\t","bindVars":{"value0":"persons/bob"}}
+{"result":[{"_key":"charlie","_id":"persons/charlie","_rev":"_UjFlUV6--A","name":"Charlie"},{"_key":"dave","_id":"persons/dave","_rev":"_UjFlUV6--B","name":"Dave"}],"hasMore":false,"cached":false,"extra":{"stats":{"writesExecuted":0,"writesIgnored":0,"scannedFull":0,"scannedIndex":4,"filtered":0,"executionTime":1.8310546875e-4},"warnings":[]},"error":false,"code":201}
+
+{"query":"\n\t  FOR vertex IN OUTBOUND @value0 knows\n\t    RETURN vertex\n\t","bindVars":{"value0":"persons/alice"}}
+{"result":[{"_key":"bob","_id":"persons/bob","_rev":"_UjFlUV6--_","name":"Bob"}],"hasMore":false,"cached":false,"extra":{"stats":{"writesExecuted":0,"writesIgnored":0,"scannedFull":0,"scannedIndex":2,"filtered":0,"executionTime":1.3899803161621094e-4},"warnings":[]},"error":false,"code":201}
+

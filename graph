@@ -1,0 +1,8 @@
+Put the teabag in a cup.
+Fill the kettle with water.
+Boil the water in the kettle.
+Pour some of the boiled water into the cup.
+Add milk to the cup.
+Add sugar to the cup.
+Stir the tea.
+Drink the tea.

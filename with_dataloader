@@ -1,0 +1,9 @@
+{"query":"\n\t  FOR person IN persons\n\t    FILTER person.name == @value0\n              LIMIT 1\n\t      RETURN person\n\t","bindVars":{"value0":"Eve"}}
+{"result":[{"_key":"eve","_id":"persons/eve","_rev":"_Uoh3SVi--_","name":"Eve"}],"hasMore":false,"cached":false,"extra":{"stats":{"writesExecuted":0,"writesIgnored":0,"scannedFull":4,"scannedIndex":0,"filtered":3,"executionTime":2.86102294921875e-4},"warnings":[]},"error":false,"code":201}
+
+{"query":"\n\t    FOR id IN @value0\n\t      let friends = (\n\t\tFOR vertex IN  OUTBOUND id knows\n\t\tRETURN vertex\n\t\t)\n\t      RETURN friends\n\t    ","bindVars":{"value0":["persons/eve"]}}
+{"result":[[{"_key":"alice","_id":"persons/alice","_rev":"_Uoh3SVe---","name":"Alice"},{"_key":"bob","_id":"persons/bob","_rev":"_Uoh3SVe--_","name":"Bob"}]],"hasMore":false,"cached":false,"extra":{"stats":{"writesExecuted":0,"writesIgnored":0,"scannedFull":0,"scannedIndex":4,"filtered":0,"executionTime":2.818107604980469e-4},"warnings":[]},"error":false,"code":201}
+
+{"query":"\n\t    FOR id IN @value0\n\t      let friends = (\n\t\tFOR vertex IN  OUTBOUND id knows\n\t\tRETURN vertex\n\t\t)\n\t      RETURN friends\n\t    ","bindVars":{"value0":["persons/alice","persons/bob"]}}
+{"result":[[{"_key":"bob","_id":"persons/bob","_rev":"_Uoh3SVe--_","name":"Bob"}],[{"_key":"charlie","_id":"persons/charlie","_rev":"_Uoh3SVe--A","name":"Charlie"},{"_key":"dave","_id":"persons/dave","_rev":"_Uoh3SVi---","name":"Dave"}]],"hasMore":false,"cached":false,"extra":{"stats":{"writesExecuted":0,"writesIgnored":0,"scannedFull":0,"scannedIndex":6,"filtered":0,"executionTime":2.810955047607422e-4},"warnings":[]},"error":false,"code":201}
+
