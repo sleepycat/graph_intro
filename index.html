@@ -26,7 +26,7 @@ class: center, middle
 
 ## Relational data
 
-.eighty[![schema](images/hr_schema.png)]
+.seventy[![schema](images/hr_schema.png)]
 
 ???
 If data isn't born relational, how does it get like this?
@@ -37,6 +37,7 @@ background-image: url(images/golden_hammer_bg.jpg)
 ???
 Programmers are trained to be able bash data of any shape into the shape of a table.
 What shape was the data before the golden hammer was weilded? Probably a graph.
+Have we lost anything by bashing it into this new shape?
 ---
 class: center, middle
 
@@ -50,7 +51,7 @@ class: center, middle
 
 # Sequencing
 
-.fourty[![dependency graph?](images/dependency_graph.png)]
+.twenty[![dependency graph?](images/dependency_graph.png)]
 
 ???
 Isn't that a dependency graph? Shouldn't we explicitly model the relationships?
@@ -60,7 +61,7 @@ class: center, middle
 
 # Interconnections
 
-.eighty[![explosion](images/connectome.jpg)]
+.sixty[![explosion](images/connectome.jpg)]
 
 ???
 ---
@@ -77,6 +78,7 @@ Heirarchical things
 
 class: center, middle
 
+# Data can be represented either way: tables or a graph
 .eighty[![equivalent](images/equivalent.png)]
 
 ???
@@ -84,6 +86,84 @@ You are looking the same data represented on the left as tables and on the right
 When most people think of data, it's primarily tables or lists of data that comes to mind.
 But this is not the only, or even best way to store all data.
 The real world contains many things that are challenging to store in a standard database
+---
+class: center, middle
+
+# Interconnection example
+
+???
+Any join operation could be considered a graph traversal.
+Complicated relationships like authors/books or employees/projects are especially painful.
+This is called a many to many relationship and it requires three tables in a relational database.
+---
+class: center, middle
+
+.eighty[![m2m](images/many_to_many.png)]
+
+???
+---
+class: middle
+
+## Relational setup
+
+```sh
+CREATE TABLE IF NOT EXISTS projects (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name VARCHAR(45) NULL);
+CREATE TABLE IF NOT EXISTS employees (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name VARCHAR(45) NULL);
+CREATE TABLE IF NOT EXISTS employees_projects (employee_id INT NOT NULL, project_id INT NOT NULL, PRIMARY KEY (project_id, employee_id), FOREIGN KEY(employee_id) REFERENCES employees(id), FOREIGN KEY(project_id) REFERENCES projects(id));
+
+INSERT INTO employees VALUES (null, "Mike");
+INSERT INTO projects VALUES (null, "Bigproj");
+INSERT INTO employees_projects VALUES (1, 1);
+```
+???
+Then a table structure is created and finally the categories and the numbers
+which denote their level of nesting
+---
+class: middle
+
+## What project is Mike working on?
+```sh
+select employees.name, projects.name from employees
+	inner join employees_projects
+    on employees.id = employees_projects.employee_id
+  inner join projects
+    on employees_projects.project_id = projects.id;
+
+Mike|Bigproj
+```
+???
+---
+class: middle
+
+## Graph setup
+```sh
+db._createDocumentCollection('projects')
+db._createDocumentCollection('employees')
+db._createEdgeCollection('works_on')
+
+INSERT {_key: "mike", name: "Mike"} INTO employees
+INSERT {_key: "bigproj", name: "Bigproj"} INTO projects
+INSERT {_to: "projects/bigproj", _from: "employees/mike"} INTO works_on
+```
+???
+---
+class: middle
+
+## What project is Mike working on?
+```sh
+FOR v IN OUTBOUND "employees/mike" works_on RETURN v
+
+[
+  {
+    "_key" : "bigproj",
+    "_id" : "projects/bigproj",
+    "_rev" : "_VFm2yp----",
+    "name" : "Bigproj"
+  }
+]
+```
+???
+Low ceremony, no rules about what attributes a any of our vertices can have.
 ---
 class: center, middle
 
@@ -95,12 +175,14 @@ We'll explore the Nested Sets design pattern and compare it with a graph approac
 ---
 class: center, middle
 
+# Representing heirarchies in relational databases is weird
 .eighty[![categories](images/categories.png)]
 
 ???
 ---
 class: center, middle
 
+# A popular strategy: The Nested Sets pattern
 .eighty[![numbered](images/nested_numbered.png)]
 
 ???
@@ -150,6 +232,8 @@ SELECT * FROM nested_category ORDER BY category_id;
 The result
 ---
 class: middle
+
+# Representing heirarchy in graphs...
 
 ```sh
 //Categories collection
@@ -431,7 +515,7 @@ class: center, middle
 .eighty[![the graph](images/products_and_categories_graph.png)]
 
 ???
-We are left with an iteresting byproduct: a graph structure.
+We decided to model our data as a graph instead of a table so our system is easier to change and deals with complicated data without accreting complexity. This choice leaves us with an iteresting byproduct: a graph structure.
 ---
 class: center, middle
 
