@@ -11,91 +11,438 @@
 class: center, middle
 
 # Thinking in graphs
-.logo[![graph](images/graph.png)]
 
 ## Mike Williamson and Jen Schellinck
 
 ---
 class: center, middle
 
-.eighty[![data](images/data.png)]
+.quote["No data is born relational" -- Dharma Shukla, Microsoft]
 
 ???
-Basically this is what most people think of when they think of data.
----
-
-class: center, middle
-
-.eighty[![illusion](images/ambiguity.jpg)]
-
-???
-Once you start thinking in graphs you see them everywhere.
----
-
-class: center, middle
-
-* Put the teabag in a cup.
-* Fill the kettle with water.
-* Boil the water in the kettle.
-* Pour some of the boiled water into the cup.
-* Add milk to the cup.
-* Add sugar to the cup.
-* Stir the tea.
-* Drink the tea.
-
-???
-Once you start thinking in graphs you see them everywhere.
+This is a really interesting quote from Microsoft Technical Fellow Dharma Shukla.
 ---
 class: center, middle
 
-.thirty[![dependency graph?](images/dependency_graph.png)]
+## Relational data
+
+.eighty[![schema](images/hr_schema.png)]
+
+???
+If data isn't born relational, how does it get like this?
+---
+
+background-image: url(images/golden_hammer_bg.jpg)
+
+???
+Programmers are trained to be able bash data of any shape into the shape of a table.
+What shape was the data before the golden hammer was weilded? Probably a graph.
+---
+class: center, middle
+
+# Types of graph
+
+.eighty[![types](images/graph_types.png)]
+
+???
+---
+class: center, middle
+
+# Sequencing
+
+.fourty[![dependency graph?](images/dependency_graph.png)]
 
 ???
 Isn't that a dependency graph? Shouldn't we explicitly model the relationships?
 ---
+
 class: center, middle
 
-# Google Cloud Natural Language API
+# Interconnections
 
-.eighty[![sentence](images/sentence.png)]
+.eighty[![explosion](images/connectome.jpg)]
 
 ???
-It gets deep.
+---
+
+class: center, middle
+
+# Heirarchy
+
+.eighty[![explosion](images/parts_explosion.jpg)]
+
+???
+Heirarchical things
+---
+
+class: center, middle
+
+.eighty[![equivalent](images/equivalent.png)]
+
+???
+You are looking the same data represented on the left as tables and on the right as a graph.
+When most people think of data, it's primarily tables or lists of data that comes to mind.
+But this is not the only, or even best way to store all data.
+The real world contains many things that are challenging to store in a standard database
+---
+class: center, middle
+
+# Heirarchy example
+
+???
+Heirarchical data is famously awkward to store in relational database.
+We'll explore the Nested Sets design pattern and compare it with a graph approach.
+---
+class: center, middle
+
+.eighty[![categories](images/categories.png)]
+
+???
+---
+class: center, middle
+
+.eighty[![numbered](images/nested_numbered.png)]
+
+???
+Here is the planning phase, where you decide what numbers the categories are
+going to have relative to each other.
+---
+class: middle
+
+## Nested Sets
+```sh
+CREATE TABLE nested_category (
+        category_id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(20) NOT NULL,
+        lft INT NOT NULL,
+        rgt INT NOT NULL
+);
+
+INSERT INTO nested_category VALUES(1,'ELECTRONICS',1,20),(2,'TELEVISIONS',2,9),(3,'TUBE',3,4),
+ (4,'LCD',5,6),(5,'PLASMA',7,8),(6,'PORTABLE ELECTRONICS',10,19),(7,'MP3 PLAYERS',11,14),(8,'FLASH',12,13),
+ (9,'CD PLAYERS',15,16),(10,'2 WAY RADIOS',17,18);
+```
+???
+Then a table structure is created and finally the categories and the numbers
+which denote their level of nesting
+---
+class: center, middle
+
+```sh
+SELECT * FROM nested_category ORDER BY category_id;
+
++-------------+----------------------+-----+-----+
+| category_id | name                 | lft | rgt |
++-------------+----------------------+-----+-----+
+|           1 | ELECTRONICS          |   1 |  20 |
+|           2 | TELEVISIONS          |   2 |   9 |
+|           3 | TUBE                 |   3 |   4 |
+|           4 | LCD                  |   5 |   6 |
+|           5 | PLASMA               |   7 |   8 |
+|           6 | PORTABLE ELECTRONICS |  10 |  19 |
+|           7 | MP3 PLAYERS          |  11 |  14 |
+|           8 | FLASH                |  12 |  13 |
+|           9 | CD PLAYERS           |  15 |  16 |
+|          10 | 2 WAY RADIOS         |  17 |  18 |
++-------------+----------------------+-----+-----+
+```
+???
+The result
+---
+class: middle
+
+```sh
+//Categories collection
+[
+  {
+    "_key" : "1318641957494",
+    "_id" : "categories/1318641957494",
+    "_rev" : "_VFQ3KPy---",
+    "name" : "electronics"
+  },
+  {
+    "_key" : "1318641957725",
+    "_id" : "categories/1318641957725",
+    "_rev" : "_VFQ57P----",
+    "name" : "portable electronics"
+  },
+...
+]
+//Relations collection
+[
+  {
+    "_key" : "1318641957818",
+    "_id" : "relations/1318641957818",
+    "_from" : "categories/1318641957725",
+    "_to" : "categories/1318641957494",
+    "_rev" : "_VFQ6xPu---"
+  },
+...
+]
+```
+???
+A graph would simply have a collection of categories. Relations are not
+calculated on the fly, they are saved as data as well: another collection
+containing edges
+---
+class: center, middle
+
+# Retrieving a full tree
+
+---
+
+class: middle
+
+```sh
+
+SELECT node.name
+FROM nested_category AS node,
+        nested_category AS parent
+WHERE node.lft BETWEEN parent.lft AND parent.rgt
+        AND parent.name = 'ELECTRONICS'
+ORDER BY node.lft;
+
++----------------------+
+| name                 |
++----------------------+
+| ELECTRONICS          |
+| TELEVISIONS          |
+| TUBE                 |
+| LCD                  |
+| PLASMA               |
+| PORTABLE ELECTRONICS |
+| MP3 PLAYERS          |
+| FLASH                |
+| CD PLAYERS           |
+| 2 WAY RADIOS         |
++----------------------+
+```
+???
+---
+class: middle
+
+```sh
+LET root = DOCUMENT("categories/1318641957494")
+LET subcategories = (FOR v IN 1..3 INBOUND root relations RETURN v.name)
+RETURN FLATTEN([root.name, subcategories])
+
+[
+	"electronics",
+	"televisions",
+	"lcd",
+	"plasma",
+	"tube",
+	"portable electronics",
+	"mp3 players",
+	"flash",
+	"2 way radios",
+	"cd players"
+]
+```
+???
+---
+class: center, middle
+
+# Finding all the leaf nodes
+
+---
+
+class: middle
+
+```sh
+SELECT name
+FROM nested_category
+WHERE rgt = lft + 1;
+
++--------------+
+| name         |
++--------------+
+| TUBE         |
+| LCD          |
+| PLASMA       |
+| FLASH        |
+| CD PLAYERS   |
+| 2 WAY RADIOS |
++--------------+
+```
+???
+---
+class: middle
+
+```sh
+FOR vertex IN 2..3 INBOUND {_id: "categories/1318641957494"} relations
+FILTER LENGTH(FOR v IN 1 INBOUND vertex relations RETURN v) == 0
+RETURN vertex.name
+
+[
+  "lcd",
+  "plasma",
+  "tube",
+  "flash",
+  "2 way radios",
+  "cd players"
+]
+```
+???
+---
+class: center, middle
+
+# Find the immediate subordinates of a node
+
+---
+
+class: middle
+
+```sh
+
+SELECT node.name, (COUNT(parent.name) - (sub_tree.depth + 1)) AS depth
+FROM nested_category AS node,
+        nested_category AS parent,
+        nested_category AS sub_parent,
+        (
+                SELECT node.name, (COUNT(parent.name) - 1) AS depth
+                FROM nested_category AS node,
+                        nested_category AS parent
+                WHERE node.lft BETWEEN parent.lft AND parent.rgt
+                        AND node.name = 'PORTABLE ELECTRONICS'
+                GROUP BY node.name
+                ORDER BY node.lft
+        )AS sub_tree
+WHERE node.lft BETWEEN parent.lft AND parent.rgt
+        AND node.lft BETWEEN sub_parent.lft AND sub_parent.rgt
+        AND sub_parent.name = sub_tree.name
+GROUP BY node.name
+HAVING depth <= 1
+ORDER BY node.lft;
+
++----------------------+-------+
+| name                 | depth |
++----------------------+-------+
+| PORTABLE ELECTRONICS |     0 |
+| MP3 PLAYERS          |     1 |
+| CD PLAYERS           |     1 |
+| 2 WAY RADIOS         |     1 |
++----------------------+-------+
+```
+???
+---
+class: middle
+
+```sh
+LET root = (FOR category IN categories FILTER category.name == "portable electronics" RETURN category)[0]
+LET subcategories = (FOR v,e,p IN INBOUND root relations RETURN {name: v.name, depth: LENGTH(p.edges)})
+RETURN UNSHIFT(FLATTEN(subcategories), {name: root.name, depth: 0})
+
+[
+  [
+    {
+      "name" : "portable electronics",
+      "depth" : 0
+    },
+    {
+      "name" : "mp3 players",
+      "depth" : 1
+    },
+    {
+      "name" : "2 way radios",
+      "depth" : 1
+    },
+    {
+      "name" : "cd players",
+      "depth" : 1
+    }
+  ]
+]
+```
+???
+---
+class: center, middle
+
+# Adding a category
+
+---
+class: middle
+
+```sh
+LOCK TABLE nested_category WRITE;
+
+SELECT @myRight := rgt FROM nested_category
+WHERE name = 'TELEVISIONS';
+
+UPDATE nested_category SET rgt = rgt + 2 WHERE rgt > @myRight;
+UPDATE nested_category SET lft = lft + 2 WHERE lft > @myRight;
+
+INSERT INTO nested_category(name, lft, rgt) VALUES('GAME CONSOLES', @myRight + 1, @myRight + 2);
+
+UNLOCK TABLES;
+```
+???
+---
+class: middle
+
+```sql
+//insert new category
+INSERT {name: "game consoles"} INTO categories RETURN NEW
+[
+  {
+    "_key" : "1318641997534",
+    "_id" : "categories/1318641997534",
+    "_rev" : "_VFX942S---",
+    "name" : "game consoles"
+  }
+]
+
+//insert a edge connecting the new category to it's parent
+INSERT {_to: "categories/1318641957494", _from: "categories/1318641997534"} INTO relations RETURN NEW
+[
+  {
+    "_key" : "1318641997709",
+    "_id" : "relations/1318641997709",
+    "_from" : "categories/1318641997534",
+    "_to" : "categories/1318641957494",
+    "_rev" : "_VFY_tou---"
+  }
+]
+
+
+```
+???
 
 ---
 class: center, middle
 
-# Google Cloud Natural Language API
+# What did this graph stuff get us?
 
-.eighty[![sentence](images/sentence.png)]
+* Change is simple
+* Less upfront planning/no "design patterns"
+* Scaling == more machines
+* Dealing with heirarchy/connections/etc does not acummulate complexity
+* Lists of stuff is not hard under either model
 
 ???
-It gets deep.
+Queries are an interesting point of comparison but the real value is in being
+able to change systems so they evolve with your needs.
+---
 
+class: center, middle
+
+# Also...
+
+.eighty[![the graph](images/products_and_categories_graph.png)]
+
+???
+We are left with an iteresting byproduct: a graph structure.
 ---
 class: center, middle
 
-.fifty[![when you see it](images/when_you_see_it.jpg)]
+# Abstracting...
+
+.eighty[![the graph](images/products_and_categories_graph.png)]
 
 ???
-
+It's pretty but what does it mean?
 ---
-class: center, middle
 
-# Attack graph
-
-.fifty[![attack graph](images/attack_graph.png)]
-
-???
-
----
-class: center, middle
-
-.eighty[![fb lending patent](images/fb_lending_patent.png)]
-
-???
-
----
 class: center, middle
 
 .fifty[![arango strongly connected component](images/arango_strong_components.png)]
