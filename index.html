@@ -17,10 +17,12 @@ class: center, middle
 ---
 class: center, middle
 
-.quote["No data is born relational" -- Dharma Shukla, Microsoft]
+## data
+
+.seventy[![schema](images/excel.png)]
 
 ???
-This is a really interesting quote from Microsoft Technical Fellow Dharma Shukla.
+If data isn't born relational, how does it get like this?
 ---
 class: center, middle
 
@@ -31,7 +33,6 @@ class: center, middle
 ???
 If data isn't born relational, how does it get like this?
 ---
-
 background-image: url(images/golden_hammer_bg.jpg)
 
 ???
@@ -39,6 +40,14 @@ Programmers are trained to be able bash data of any shape into the shape of a ta
 What shape was the data before the golden hammer was weilded? Probably a graph.
 Have we lost anything by bashing it into this new shape?
 ---
+class: center, middle
+
+.quote["No data is born relational" -- Dharma Shukla, Microsoft]
+
+???
+This is a really interesting quote from Microsoft Technical Fellow Dharma Shukla.
+---
+
 class: center, middle
 
 # Types of graph
@@ -97,6 +106,8 @@ Complicated relationships like authors/books or employees/projects are especiall
 This is called a many to many relationship and it requires three tables in a relational database.
 ---
 class: center, middle
+
+# The many to many relationship
 
 .eighty[![m2m](images/many_to_many.png)]
 
@@ -175,7 +186,7 @@ We'll explore the Nested Sets design pattern and compare it with a graph approac
 ---
 class: center, middle
 
-# Representing heirarchies in relational databases is weird
+# Representing heirarchy in relational databases is awkward
 .eighty[![categories](images/categories.png)]
 
 ???
@@ -268,6 +279,13 @@ class: middle
 A graph would simply have a collection of categories. Relations are not
 calculated on the fly, they are saved as data as well: another collection
 containing edges
+---
+class: center, middle
+
+# The same heirarchy represented as a graph
+
+.eighty[![](images/graph_heirarchy.png)]
+
 ---
 class: center, middle
 
@@ -378,7 +396,6 @@ class: center, middle
 class: middle
 
 ```sh
-
 SELECT node.name, (COUNT(parent.name) - (sub_tree.depth + 1)) AS depth
 FROM nested_category AS node,
         nested_category AS parent,
@@ -525,6 +542,12 @@ class: center, middle
 
 ???
 It's pretty but what does it mean?
+---
+class: center, middle
+
+# Meaningful structure
+
+???
 ---
 
 class: center, middle
