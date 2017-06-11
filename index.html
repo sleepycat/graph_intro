@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Serving connected data</title>
+    <title>Thinking in Graphs</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link rel="stylesheet" type="text/css" href="stylesheets/style.css" >
   </head>
@@ -439,7 +439,7 @@ ORDER BY node.lft;
 ---
 class: middle
 
-```javascript
+```sql
 LET root = DOCUMENT("categories/portable_electronics")
 LET subcategories = (FOR v,e,p IN INBOUND root relations RETURN {name: v.name, depth: LENGTH(p.edges)})
 RETURN UNSHIFT(subcategories, {name: root.name, depth: 0})
@@ -470,6 +470,8 @@ RETURN UNSHIFT(subcategories, {name: root.name, depth: 0})
 class: center, middle
 
 # Adding a category
+
+What if we want to add a "game consoles" category?
 
 ---
 class: center, middle
@@ -527,6 +529,14 @@ INSERT {_to: "categories/electronics", _from: "categories/game_consoles"} INTO r
 ---
 class: center, middle
 
+# Our new hierarchy
+
+.ninetyfive[![plus game consoles](images/hierarchy_plus_game_consoles.png)]
+
+???
+---
+class: center, middle
+
 # What did this graph stuff get us?
 
 * Change is easier for systems built like this
@@ -543,7 +553,7 @@ class: center, middle
 
 # Also...
 
-.eighty[![the graph](images/products_and_categories_graph.png)]
+.sixty[![the graph](images/structure.png)]
 
 ???
 We decided to model our data as a graph instead of a table so our system is easier to change and deals with complicated data without accreting complexity. This choice leaves us with an iteresting byproduct: a graph structure.
@@ -552,7 +562,7 @@ class: center, middle
 
 # Abstracting...
 
-.eighty[![the graph](images/abstracted_graph.png)]
+.sixty[![the graph](images/structure_unlabeled.png)]
 
 ???
 It's pretty but what does it mean?
