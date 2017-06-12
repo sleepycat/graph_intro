@@ -399,8 +399,8 @@ class: middle
 
 ```sh
 FOR vertex IN 2..3 INBOUND "categories/electronics" relations
-FILTER LENGTH(FOR v IN 1 INBOUND vertex relations RETURN v) == 0
-RETURN vertex.name
+  FILTER LENGTH(FOR v IN 1 INBOUND vertex relations RETURN v) == 0
+    RETURN vertex.name
 
 [
   "lcd",
@@ -607,7 +607,7 @@ able to change systems so they evolve with your needs.
 ---
 class: center, middle
 
-# An interesting byproduct
+# Our graph data
 
 .ninetyfive[![plus game consoles](images/graph_hierarchy.png)]
 
@@ -617,25 +617,29 @@ We decided to model our data as a graph instead of a table so our system is easi
 
 class: center, middle
 
-# An interesting byproduct
+# An interesting byproduct: graph structure
 
 .sixty[![the graph](images/structure_without_games.png)]
 
 ---
 class: center, middle
 
-# An interesting byproduct
+# Structure with meaning
 
 .sixty[![the graph](images/structure_without_games_unlabeled.png)]
 
-???
-It's pretty but what does it mean?
+---
+class: center, middle
+
+# Structure with meaning
+
+.ninety[![call structure](images/call_structure.png)]
+
 ---
 class: center, middle
 
 # Meaningful structure
 
-???
 ---
 
 class: center, middle
@@ -716,27 +720,29 @@ class: center, middle
 ---
 class: center, middle
 
-#Interpreting the Call Patterns
+# Interpreting the Call Patterns
 
 .seventy[![schema](images/r_pics/graphthreecolours.png)]
 
 ---
 class: center, middle
 
-#A Subgraph of Only Sales People
-.fifty[![schema](images/r_pics/sellersrelationships.png)]
+# A Subgraph of Only Sales People
 
+.fifty[![schema](images/r_pics/sellersrelationships.png)]
 
 ---
 class: center, middle
 
 # An Interpretation of the Sales People Subgraph
+
 .fifty[![schema](images/r_pics/graphmaybeloners.png)]
 
 ---
 class: center, middle
 
-#Which sales people are a “social bridge”?
+# Which sales people are a "social bridge"?
+
 .fifty[![schema](images/r_pics/graphbetweeness.png)]
 
 ---
@@ -745,6 +751,14 @@ class: center, middle
 
 # Questions?
 
+## datascienceexpertsgroup.com
+
+### Jen Schellinck
+* Github: @jschellinck
+* Twitter: @JSchellinck
+* jschellinck@sysabee.com
+
+### Mike Williamson
 * Github: @sleepycat
 * Twitter: @dexterchief
 * mike@korora.ca
