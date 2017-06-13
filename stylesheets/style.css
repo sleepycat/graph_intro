@@ -11,23 +11,8 @@ body {
   font-size: 0.9em;
 }
 
-
-#serving-connected-data-with-graphql {
-  position: absolute;
-  position: absolute;
-  right: 20%;
-  top: 41%;
-  font-size: 3.2em;
-}
-
 .javascript {
   font-size: 1.5em;
-}
-
-#mike-williamson {
-  position: absolute;
-  top: 64%;
-  right: 41%;
 }
 
 .small code {
