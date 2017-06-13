@@ -79,7 +79,7 @@ class: center, middle
 
 class: center, middle
 
-# Graphs are good at expressing heirarchy
+# Graphs are good at expressing hierarchy
 
 .eighty[![explosion](images/parts_explosion.jpg)]
 
@@ -87,7 +87,9 @@ class: center, middle
 
 class: center, middle
 
-# Same data, different representations: tables vs graph
+# Graphs are good at storage?
+
+Same data, different representations
 
 .eighty[![equivalent](images/equivalent.png)]
 
@@ -95,18 +97,18 @@ class: center, middle
 
 class: center, middle
 
-# Tables vs graph: Heirarchy example
+# Tables vs graph: hierarchy example
 
 ---
 class: center, middle
 
-# Our test hierarchy: ecommerce categories
+# Our test hierarchy: e-commerce categories
 .eighty[![categories](images/categories.png)]
 
 ---
 class: center, middle
 
-# A popular strategy: The Nested Sets pattern
+# A popular strategy: the nested sets pattern
 .eighty[![numbered](images/nested_numbered.png)]
 
 ???
@@ -115,7 +117,7 @@ going to have relative to each other.
 ---
 class: middle
 
-## Nested Sets
+## Nested sets
 ```sql
 # The structure
 CREATE TABLE nested_category (
@@ -177,7 +179,7 @@ containing edges
 ---
 class: center, middle
 
-# Differences
+# Differences so far
 
 ## Relational
 * Data stored as rows in tables
@@ -215,7 +217,7 @@ class: center, middle
 
 class: center, middle
 
-# Change: Adding a category
+# Change: adding a category
 
 What if we want to add a "game consoles" category?
 
@@ -324,12 +326,13 @@ INSERT {_to: "categories/electronics", _from: "categories/game_consoles"} INTO r
 ---
 class: center, middle
 
-# What did this graph stuff get us?
+# Differences pt 2
 
 * Change is easier for systems built like this
-* Certain ideas are naturally expressed as graphs
-* Less upfront planning/no "sql design patterns"
+* Certain ideas naturally expressed as graphs: simpler code/no "sql design patterns"
+* Less upfront planning
 * Scaling == more machines
+* Plus another thing...
 
 ???
 Queries are an interesting point of comparison but the real value is in being
@@ -374,7 +377,7 @@ class: center, middle
 
 class: center, middle
 
-# Graph Structure
+# Graph structure
 
 .twenty[![snowflakegraphic](images/r_pics/stargraph.png)]
 
@@ -402,7 +405,7 @@ sqlite> select * from calls limit 5;
 ---
 class: center, middle
 
-# A Visualization of the Phone Call Dataset
+# A visualization of the phone call dataset
 
 .seventy[![schema](images/r_pics/phonecallgraphvis.png)]
 
@@ -410,7 +413,7 @@ class: center, middle
 ---
 class: center, middle
 
-# World to Graph and Back Again
+# World to graph and back again
 
 .seventy[![schema](images/r_pics/worldtograph.png)]
 
@@ -419,7 +422,7 @@ class: center, middle
 
 class: center, middle
 
-# Back to the Phone Call Dataset
+# Back to the phone call dataset
 
 .seventy[![schema](images/r_pics/phonecallgraphvis.png)]
 
@@ -428,7 +431,7 @@ class: center, middle
 ---
 class: center, middle
 
-# Options for Phone Calling Patterns
+# Options for phone calling patterns
 
 .fifty[![schema](images/r_pics/callpatterns.png)]
 
@@ -436,34 +439,34 @@ class: center, middle
 ---
 class: center, middle
 
-# People Who Received Phone Calls but Never Made Them
+# People who received phone calls but never made them
 
 .seventy[![schema](images/r_pics/phonecallsinnotout.png)]
 
 ---
 class: center, middle
-# Sales People and Clients
+# Sales people and clients
 
 .fifty[![schema](images/r_pics/sellersandclients.png)]
 
 ---
 class: center, middle
 
-# Interpreting the Call Patterns
+# Interpreting the call patterns
 
 .fifty[![schema](images/r_pics/graphthreecolours.png)]
 
 ---
 class: center, middle
 
-# A Subgraph of Only Sales People
+# A subgraph of only sales people
 
 .fifty[![schema](images/r_pics/sellersrelationships.png)]
 
 ---
 class: center, middle
 
-# An Interpretation of the Sales People Subgraph
+# An interpretation of the sales people subgraph
 
 .fifty[![schema](images/r_pics/graphmaybeloners.png)]
 
