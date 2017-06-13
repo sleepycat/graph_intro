@@ -14,9 +14,6 @@ class: center, middle
 
 ## Mike Williamson and Jen Schellinck
 
-???
-Most introductory talks about graphs are pretty abstract and math oriented. The aim here is to back into understanding graphs by showing how graphs can be used when storing and retrieving data.
-We are going to look at graphs in two different contexts: a storage context and an analysis context.
 ---
 class: center, middle
 
@@ -57,7 +54,7 @@ class: center, middle
 ---
 class: center, middle
 
-# Sequencing
+# Graphs are good at expressing sequences
 
 .twenty[![dependency graph?](images/dependency_graph.png)]
 
@@ -67,143 +64,45 @@ Isn't that a dependency graph? Shouldn't we explicitly model the relationships?
 
 class: center, middle
 
-# Interconnections
+# Graphs are good at expressing interconnections
 
 .seventy[![connectome](images/connectome.jpg)]
 
-???
 ---
 class: center, middle
 
-# Interconnections
+# Graphs are good at expressing interconnections
 
 .sixty[![saddam](images/saddam_sna.png)]
 
-???
 ---
 
 class: center, middle
 
-# Heirarchy
+# Graphs are good at expressing heirarchy
 
 .eighty[![explosion](images/parts_explosion.jpg)]
 
-???
-Heirarchical things
 ---
 
 class: center, middle
 
-# Data can be represented either way: tables or a graph
+# Same data, different representations: tables vs graph
+
 .eighty[![equivalent](images/equivalent.png)]
 
-???
-You are looking the same data represented on the left as tables and on the right as a graph.
-When most people think of data, it's primarily tables or lists of data that comes to mind.
-But this is not the only, or even best way to store all data.
-The real world contains many things that are challenging to store in a standard database
+---
+
+class: center, middle
+
+# Tables vs graph: Heirarchy example
+
 ---
 class: center, middle
 
-# Differences: Interconnection example
-
-???
-Any join operation could be considered a graph traversal.
-Complicated relationships like authors/books or employees/projects are especially painful.
-This is called a many to many relationship and it requires three tables in a relational database.
----
-class: center, middle
-
-# The many to many relationship
-
-.eighty[![m2m](images/many_to_many.png)]
-
-???
----
-class: middle
-
-## Relational setup
-
-```sql
-CREATE TABLE IF NOT EXISTS projects (
-	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-	name VARCHAR(45) NULL
-);
-CREATE TABLE IF NOT EXISTS employees (
-	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-	name VARCHAR(45) NULL
-);
-CREATE TABLE IF NOT EXISTS employees_projects (
-	employee_id INT NOT NULL,
-	project_id INT NOT NULL,
-	PRIMARY KEY (project_id, employee_id),
-	FOREIGN KEY(employee_id) REFERENCES employees(id),
-	FOREIGN KEY(project_id) REFERENCES projects(id)
-);
-
-INSERT INTO employees VALUES (null, "Mike");
-INSERT INTO projects VALUES (null, "Bigproj");
-INSERT INTO employees_projects VALUES (1, 1);
-```
-???
-Then a table structure is created and finally the categories and the numbers
-which denote their level of nesting
----
-class: middle
-
-## What project is Mike working on?
-```sql
-select projects.name from employees
-	inner join employees_projects
-    on employees.id = employees_projects.employee_id
-  inner join projects
-    on employees_projects.project_id = projects.id;
-
-Bigproj
-```
-???
----
-class: middle
-
-## Graph setup
-```sh
-db._createDocumentCollection('projects')
-db._createDocumentCollection('employees')
-db._createEdgeCollection('works_on')
-
-INSERT {_key: "mike", name: "Mike"} INTO employees
-INSERT {_key: "bigproj", name: "Bigproj"} INTO projects
-INSERT {_to: "projects/bigproj", _from: "employees/mike"} INTO works_on
-```
-???
----
-class: middle
-
-## What project is Mike working on?
-```sql
-FOR v IN OUTBOUND "employees/mike" works_on RETURN v.name
-
-[
-  "Bigproj"
-]
-```
-???
-Low ceremony, no rules about what attributes a any of our vertices can have.
----
-class: center, middle
-
-# Differences: Heirarchy example
-
-???
-Heirarchical data is famously awkward to store in relational database.
-We'll explore the Nested Sets design pattern and compare it with a graph approach.
----
-class: center, middle
-
-# Representing heirarchy in relational databases is awkward
+# Our test hierarchy: ecommerce categories
 .eighty[![categories](images/categories.png)]
 
-???
 ---
 class: center, middle
 
@@ -218,6 +117,7 @@ class: middle
 
 ## Nested Sets
 ```sql
+# The structure
 CREATE TABLE nested_category (
 	category_id INT AUTO_INCREMENT PRIMARY KEY,
 	name VARCHAR(20) NOT NULL,
@@ -225,6 +125,7 @@ CREATE TABLE nested_category (
 	rgt INT NOT NULL
 );
 
+# The data
 INSERT INTO nested_category VALUES(1,'ELECTRONICS',1,20),(2,'TELEVISIONS',2,9),(3,'TUBE',3,4),
  (4,'LCD',5,6),(5,'PLASMA',7,8),(6,'PORTABLE ELECTRONICS',10,19),(7,'MP3 PLAYERS',11,14),(8,'FLASH',12,13),
  (9,'CD PLAYERS',15,16),(10,'2 WAY RADIOS',17,18);
@@ -233,44 +134,13 @@ INSERT INTO nested_category VALUES(1,'ELECTRONICS',1,20),(2,'TELEVISIONS',2,9),(
 Then a table structure is created and finally the categories and the numbers
 which denote their level of nesting
 ---
-class: center, middle
-
-# The actual data
-
-```sql
-SELECT * FROM nested_category ORDER BY category_id;
-
-+-------------+----------------------+-----+-----+
-| category_id | name                 | lft | rgt |
-+-------------+----------------------+-----+-----+
-|           1 | ELECTRONICS          |   1 |  20 |
-|           2 | TELEVISIONS          |   2 |   9 |
-|           3 | TUBE                 |   3 |   4 |
-|           4 | LCD                  |   5 |   6 |
-|           5 | PLASMA               |   7 |   8 |
-|           6 | PORTABLE ELECTRONICS |  10 |  19 |
-|           7 | MP3 PLAYERS          |  11 |  14 |
-|           8 | FLASH                |  12 |  13 |
-|           9 | CD PLAYERS           |  15 |  16 |
-|          10 | 2 WAY RADIOS         |  17 |  18 |
-+-------------+----------------------+-----+-----+
-```
-???
-The result
----
-class: center, middle
-
-# Graph hierarchy: This isn't conceptual, it's literal
-
-.eighty[![](images/graph_hierarchy.png)]
-
----
 class: middle
 
-# The actual data
+# Graph data
 
 ```sh
-//Categories collection
+db._createDocumentCollection('categories') // A container for our vertices
+// our vertex data:
 [
   {
     "_key" : "electronics",
@@ -286,7 +156,9 @@ class: middle
   },
 ...
 ]
-//Relations collection
+
+db._createEdgeCollection('relations') // A container for our edges
+// our edge data:
 [
   {
     "_key" : "1318642540530",
@@ -305,179 +177,45 @@ containing edges
 ---
 class: center, middle
 
+# Differences
+
+## Relational
+* Data stored as rows in tables
+* All columns must be known in advance
+* Relationships are calculated
+
+## Graph
+* Data stored as "documents" in collections
+* Collections don't care about the "shape" of a document*
+* Relationships are also documents
+
+---
+class: center, middle
+
 # Retrieving a full tree
 
+.ninety[![](images/full_tree_comparison.png)]
+
 ---
 
-class: middle
-
-# Relational
-
-```sh
-
-SELECT node.name
-FROM nested_category AS node,
-	nested_category AS parent
-WHERE node.lft BETWEEN parent.lft AND parent.rgt
-	AND parent.name = 'ELECTRONICS'
-ORDER BY node.lft;
-
-+----------------------+
-| name                 |
-+----------------------+
-| ELECTRONICS          |
-| TELEVISIONS          |
-| TUBE                 |
-| LCD                  |
-| PLASMA               |
-| PORTABLE ELECTRONICS |
-| MP3 PLAYERS          |
-| FLASH                |
-| CD PLAYERS           |
-| 2 WAY RADIOS         |
-+----------------------+
-```
-???
----
-class: middle
-
-# Graph
-
-```sh
-LET root = DOCUMENT("categories/electronics")
-LET subcategories = (FOR v IN 1..3 INBOUND root relations RETURN v.name)
-RETURN FLATTEN([root.name, subcategories])
-
-[
-	"electronics",
-	"televisions",
-	"lcd",
-	"plasma",
-	"tube",
-	"portable electronics",
-	"mp3 players",
-	"flash",
-	"2 way radios",
-	"cd players"
-]
-```
-???
----
 class: center, middle
 
-# Finding all the leaf nodes
+# Finding categories with no categories beneath them
 
-(categories with no categories beneath them)
-
+.ninety[![](images/leaf_node_comparison.png)]
 ---
 
-class: middle
-
-# Relational
-
-```sh
-SELECT name
-FROM nested_category
-WHERE rgt = lft + 1;
-
-+--------------+
-| name         |
-+--------------+
-| TUBE         |
-| LCD          |
-| PLASMA       |
-| FLASH        |
-| CD PLAYERS   |
-| 2 WAY RADIOS |
-+--------------+
-```
-???
----
-class: middle
-
-# Graph
-
-```sh
-FOR vertex IN 2..3 INBOUND "categories/electronics" relations
-  FILTER LENGTH(FOR v IN 1 INBOUND vertex relations RETURN v) == 0
-    RETURN vertex.name
-
-[
-  "lcd",
-  "plasma",
-  "tube",
-  "flash",
-  "2 way radios",
-  "cd players"
-]
-```
-???
----
 class: center, middle
 
-# Find the immediate subordinates of a node
+# Finding subcategories
+
+.ninety[![](images/subcategories_comparison.png)]
 
 ---
 
-class: middle
-
-# Relational
-
-```sql
-SELECT node.name, (COUNT(parent.name) - (sub_tree.depth + 1)) AS depth
-FROM nested_category AS node,
-	nested_category AS parent,
-	nested_category AS sub_parent,
-	(
-		SELECT node.name, (COUNT(parent.name) - 1) AS depth
-		FROM nested_category AS node,
-						nested_category AS parent
-		WHERE node.lft BETWEEN parent.lft AND parent.rgt
-						AND node.name = 'PORTABLE ELECTRONICS'
-		GROUP BY node.name
-		ORDER BY node.lft
-	)AS sub_tree
-WHERE node.lft BETWEEN parent.lft AND parent.rgt
-	AND node.lft BETWEEN sub_parent.lft AND sub_parent.rgt
-	AND sub_parent.name = sub_tree.name
-GROUP BY node.name
-HAVING depth &lt= 1
-ORDER BY node.lft;
-
-+----------------------+-------+
-| name                 | depth |
-+----------------------+-------+
-| PORTABLE ELECTRONICS |     0 |
-| MP3 PLAYERS          |     1 |
-| CD PLAYERS           |     1 |
-| 2 WAY RADIOS         |     1 |
-+----------------------+-------+
-```
-???
----
-class: middle
-
-# Graph
-
-```sql
-LET root = DOCUMENT("categories/portable_electronics")
-LET subcategories = (FOR v,e,p IN INBOUND root relations RETURN {name: v.name, depth: LENGTH(p.edges)})
-RETURN UNSHIFT(subcategories, {name: root.name, depth: 0})
-
-[
-  [
-    { "name" : "portable electronics", "depth" : 0 },
-    { "name" : "mp3 players", "depth" : 1 },
-    { "name" : "2 way radios", "depth" : 1 },
-    { "name" : "cd players", "depth" : 1 }
-  ]
-]
-```
-???
----
 class: center, middle
 
-# Adding a category
+# Change: Adding a category
 
 What if we want to add a "game consoles" category?
 
@@ -586,18 +324,10 @@ INSERT {_to: "categories/electronics", _from: "categories/game_consoles"} INTO r
 ---
 class: center, middle
 
-# Our new hierarchy
-
-.ninetyfive[![plus game consoles](images/hierarchy_plus_game_consoles.png)]
-
-???
----
-class: center, middle
-
 # What did this graph stuff get us?
 
 * Change is easier for systems built like this
-* Data complexity does not mean system/code complexity
+* Certain ideas are naturally expressed as graphs
 * Less upfront planning/no "sql design patterns"
 * Scaling == more machines
 
