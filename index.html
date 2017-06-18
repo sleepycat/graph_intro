@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Thinking in Graphs</title>
+    <title>Graph theory, graph practice</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link rel="stylesheet" type="text/css" href="stylesheets/style.css" >
   </head>
@@ -10,23 +10,17 @@
 
 class: center, middle
 
-# Thinking in graphs
+# Graph theory, graph practice
 
 ## Mike Williamson and Jen Schellinck
 
 ---
 class: center, middle
 
-## When we think of data...
+.quote["No data is born relational" -- Dharma Shukla, Microsoft]
 
-.seventy[![schema](images/excel.png)]
-
----
-class: center, middle
-
-## Relational data
-
-.seventy[![schema](images/hr_schema.png)]
+???
+This is a really interesting quote from Microsoft Technical Fellow Dharma Shukla.
 
 ---
 background-image: url(images/golden_hammer_bg.jpg)
@@ -35,13 +29,6 @@ background-image: url(images/golden_hammer_bg.jpg)
 Programmers are trained to be able bash data of any shape into the shape of a table.
 What shape was the data before the golden hammer was weilded? Probably a graph.
 Have we lost anything by bashing it into this new shape?
----
-class: center, middle
-
-.quote["No data is born relational" -- Dharma Shukla, Microsoft]
-
-???
-This is a really interesting quote from Microsoft Technical Fellow Dharma Shukla.
 ---
 
 class: center, middle
@@ -94,7 +81,6 @@ Same data, different representations
 .eighty[![equivalent](images/equivalent.png)]
 
 ---
-
 class: center, middle
 
 # Tables vs graph: hierarchy example
@@ -105,10 +91,14 @@ class: center, middle
 # Our test hierarchy: e-commerce categories
 .eighty[![categories](images/categories.png)]
 
+http://mikehillyer.com/articles/managing-hierarchical-data-in-mysql/
 ---
 class: center, middle
 
 # A popular strategy: the nested sets pattern
+
+Our intermediary representation
+
 .eighty[![numbered](images/nested_numbered.png)]
 
 ???
@@ -185,11 +175,13 @@ class: center, middle
 * Data stored as rows in tables
 * All columns must be known in advance
 * Relationships are calculated
+* Intermediary representation needed
 
 ## Graph
 * Data stored as "documents" in collections
 * Collections don't care about the "shape" of a document*
 * Relationships are also documents
+* Data expresses the idea of a tree directly
 
 ---
 class: center, middle
@@ -478,9 +470,27 @@ class: center, middle
 .fifty[![schema](images/r_pics/graphbetweeness.png)]
 
 ---
-class: middle
+class: center, middle
 
 # Automating those insights
+
+---
+class: center, middle
+
+.quote["The naive algorithm for computing the betweenness involves all-pair shortest paths which require O(n&#xb3;) time and O(n&#xb2;) storage. ... Brandes made a faster algorithm by running n single source-shortest-path algorithms which require O(n + m) space and run in O(nm) and O(nm + n&#xb2; log n) time on unweighted and weighted networks, respectively, where n is the number of nodes and m is the number of edges in a graph."]
+
+Centralities in Large Networks: Algorithms and Observations (U Kang et.al. 2011)
+
+---
+class: center, middle
+
+# Map/Reduce for graphs
+
+.eighty[![schema](images/pregel.png)]
+
+---
+
+class: middle
 
 ```sql
 db._useDatabase('calls')
@@ -504,6 +514,20 @@ class: center, middle
 # Visualizing our ranked data
 
 .ninety[![schema](images/webgl_arangodb.png)]
+
+---
+class: center, middle
+
+# Available algorithms in ArangoDB 3.2
+
+* Weakly connected components (connectedcomponents)
+* Strongly connected components (scc)
+* Pagerank
+* Hyperlink-Induced Topic Search (HITS)
+* Effective closeness
+* Linerank
+* Label Propagation
+* ...
 
 ---
 
